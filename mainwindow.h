@@ -20,6 +20,7 @@ public:
 
 private slots:
     void on_ButtonGenerator_clicked();
+    void on_pushButton_copy_clicked();
 
 private:
     int eval(const std::string& s)
@@ -35,7 +36,7 @@ private:
         }
         return -1;
     }
-    void decompose(int,char);
+    std::string decompose(int,char,std::string);
     void generate();
     void init1()//质数筛
     {
@@ -66,8 +67,43 @@ private:
     }
     void init2()
     {
-        preExpression = "";
+        //preExpression = "";
         opCnt = 0;
+        validArith = true;
+        isLeaf = true;
+    }
+    int precedenceCmp(char op1,char op2)
+    {//比较粗糙不严谨的比较方法基于左结合 a op1 b op2 c
+        //必须从左到右
+        if(op1 == '*' || op1 == '/')
+            if(op2 == '+' || op2 == '-')
+            return 1;
+        //必须从右到左
+        if(op1 == '+' || op1 == '-')
+            if(op2 == '*' || op2 == '/')
+                return -1;
+        if(op1 == '-' && op2 == '+')
+            return 1;
+        return 0;
+    }
+    bool haveOp(char op){
+        switch(op){
+        case '+':
+            if(haveAdd) return true;
+            break;
+        case '-':
+            if(haveSub) return true;
+            break;
+        case '*':
+            if(haveMul) return true;
+            break;
+        case '/':
+            if(haveDiv) return true;
+            break;
+        default:
+            return false;
+        }
+        return false;
     }
 
     Ui::MainWindow *ui;
@@ -76,8 +112,27 @@ private:
     std::queue<char> q;
     char op[4] = {'+','*','-','/'};
     int isNotPrime[100];//0代表是质数
-    std::string preExpression;
+    //std::string preExpression;
+    std::string InorderExpression;
     int opCnt;
+    bool validArith;
+    int ans;
+    bool isLeaf;
+    int tmpCol;
+    struct Operator
+    {
+        int op;
+        int precedence;
+        int associativity;
+        //左结合 用 'L'
+        Operator(int opr, int prec, int assoc) :
+            op(opr),
+            precedence(prec),
+            associativity(assoc)
+        {}
+    public:
+
+    };
 };
 
 #endif // MAINWINDOW_H
