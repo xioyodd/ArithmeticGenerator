@@ -5,6 +5,7 @@
 #include <iostream>
 #include<queue>
 
+
 namespace Ui {
 class MainWindow;
 }
@@ -36,7 +37,7 @@ private:
     }
     void decompose(int,char);
     void generate();
-    void init1()
+    void init1()//质数筛
     {
         int prime[100];
 
@@ -61,12 +62,14 @@ private:
                 }
             }
         }
+
     }
     void init2()
     {
         preExpression = "";
         opCnt = 0;
     }
+
     Ui::MainWindow *ui;
     int arithNum,opNum,printCol,minNum,maxNum;
     bool haveAdd,haveSub,haveMul,haveDiv,showAns;

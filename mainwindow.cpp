@@ -19,7 +19,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::decompose(int ans,char tmpOp)
 {
-    std::cout<<"dec"<<endl;
+    //std::cout<<"dec"<<endl;
 
     if(opCnt>=opNum)
     {
@@ -27,7 +27,7 @@ void MainWindow::decompose(int ans,char tmpOp)
         preExpression += std::to_string(ans);
         return;
     }
-    if('+' == tmpOp)//ans == a1+a2
+    if('+' == tmpOp)//ans = a1+a2
     {
         if(1==ans)
         {
@@ -62,15 +62,16 @@ void MainWindow::decompose(int ans,char tmpOp)
     if('*' == tmpOp)
     {
         if(!isNotPrime[ans])    //ans是质数
-        {
+        {   //no need to gen 1*n=n
             preExpression += std::to_string(ans);
             return;
         }
         int a1;
         while(true)
         {
-            a1 = rand()%(ans-3)+2;
+            a1 = rand()%(ans-2)+2;
             if(ans%a1 ==0) break;
+            std::cout<<"likely loop death in *"<<std::endl;
         }
         int a2 = ans/a1;
         preExpression += tmpOp;
@@ -80,7 +81,7 @@ void MainWindow::decompose(int ans,char tmpOp)
         char operator2 = op[rand()%4];
         decompose(a2,operator2);
     }
-    if('/' == tmpOp)
+    if('/' == tmpOp)//ans = a1/a2
     {
         if(ans>=50)
         {
@@ -92,6 +93,7 @@ void MainWindow::decompose(int ans,char tmpOp)
         {
             a1 = rand()%(maxNum-ans-1)+1+ans;//大于ans的被除数
             if(a1%ans == 0) break;
+            std::cout<<"likely loop death in /"<<std::endl;
         }
         int a2 = a1/ans;
         preExpression += tmpOp;
@@ -109,6 +111,7 @@ void MainWindow::generate()
 
     for(int i=0;i<arithNum;i++)
     {
+        init1();
         init2();
         int ans = rand()%(maxNum-1)+1;//随机一个答案
         char operator1 = op[rand()%4];//随机一个运算符
