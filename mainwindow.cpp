@@ -5,6 +5,7 @@
 #include<queue>
 #include"tnode.h"
 #include<algorithm>
+#include<sstream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -134,6 +135,33 @@ void string_replace( std::string &strBig, const std::string &strsrc, const std::
         pos += dstlen;
     }
 }
+std::string & std_string_format(std::string & _str, const char * _Format, ...) {
+    std::string tmp;
+
+    va_list marker = NULL;
+    va_start(marker, _Format);
+
+    size_t num_of_chars = _vscprintf(_Format, marker);
+
+    if (num_of_chars > tmp.capacity()) {
+        tmp.resize(num_of_chars + 1);
+    }
+
+    vsprintf_s((char *)tmp.data(), tmp.capacity(), _Format, marker);
+
+    va_end(marker);
+
+    _str = tmp.c_str();
+    return _str;
+}
+template <typename ...Args>
+inline std::string format_string(const char* format, Args... args)
+{ constexpr size_t oldlen = BUFSIZ; char buffer[oldlen]; // 默认栈上的缓冲区
+    size_t newlen = snprintf(&buffer[0], oldlen, format, args...); newlen++;
+    // 算上终止符'\0'
+    if (newlen > oldlen) { // 默认缓冲区不够大，从堆上分配
+        std::vector<char> newbuffer(newlen); snprintf(newbuffer.data(), newlen, format, args...);
+        return std::string(newbuffer.data()); } return buffer; }
 
 void MainWindow::generate()
 {
@@ -156,17 +184,28 @@ void MainWindow::generate()
             InorderExpression = decompose(ans,operator1,"");//分解
         }while(!validArith);
 
+        std::string formatExpression;
+        int totL = int(sqrt(double(maxNum))+1)*(opNum+2) + opNum;
         string_replace(InorderExpression,"*","×");
         string_replace(InorderExpression,"/","÷");
-        QString nxt = QString::number(++totCnt) + ". " + QString::fromStdString(InorderExpression);
+        InorderExpression = to_string(++totCnt) + ". "+InorderExpression;
+//        std_string_format(formatExpression,"%d",totL,InorderExpression);
+//        formatExpression=format_string("%s",InorderExpression);
+//        stringstream ss;
+//        ss<<InorderExpression;
+//        formatExpression = ss.str(totL);
         if( showAns)
-            nxt = nxt + " = " + QString::number(ans);
-        nxt = nxt + "    \t\t";             //对齐，还不完美
+            InorderExpression = InorderExpression + " = " + to_string(ans);
+        InorderExpression.resize(totL/2,' ');
+        QString nxt =QString::fromStdString(InorderExpression);
+        nxt = nxt + "\t";
         tmpCol++;
         if(tmpCol>=printCol){
             tmpCol = 0;
             nxt = nxt + "\n";
         }
+//        nxt.replace("*","×");
+//        nxt.replace("/","÷");
         ui->textEdit->insertPlainText(nxt);
         std::cout<<InorderExpression<<" = "<<ans<<std::endl;
         //getchar();
