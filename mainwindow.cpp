@@ -46,7 +46,7 @@ std::string MainWindow::decompose(int ans,char tmpOp, std::string tmpInorderExpr
     }
     if('-' == tmpOp)//ans = a1-a2
     {
-        if(99 == ans)
+        if(maxNum-1 == ans)
         {
             isLeaf = true;
             tmpInorderExpression += std::to_string(ans);
@@ -73,7 +73,7 @@ std::string MainWindow::decompose(int ans,char tmpOp, std::string tmpInorderExpr
     }
     if('/' == tmpOp)//ans = a1/a2
     {
-        if(ans>=50)
+        if(ans>=maxNum/2)
         {
             isLeaf = true;
             tmpInorderExpression += std::to_string(ans);
