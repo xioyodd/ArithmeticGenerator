@@ -185,7 +185,7 @@ void MainWindow::generate()
         }while(!validArith);
 
         std::string formatExpression;
-        int totL = int(sqrt(double(maxNum))+1)*(opNum+2) + opNum;
+        int totL = int(pow(double(maxNum),0.1)+1)*(opNum+2) + opNum + 12;
         string_replace(InorderExpression,"*","×");
         string_replace(InorderExpression,"/","÷");
         InorderExpression = to_string(++totCnt) + ". "+InorderExpression;
@@ -196,7 +196,7 @@ void MainWindow::generate()
 //        formatExpression = ss.str(totL);
         if( showAns)
             InorderExpression = InorderExpression + " = " + to_string(ans);
-        InorderExpression.resize(totL/2,' ');
+        InorderExpression.resize(totL,' ');
         QString nxt =QString::fromStdString(InorderExpression);
         nxt = nxt + "\t";
         tmpCol++;
