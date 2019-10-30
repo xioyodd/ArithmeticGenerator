@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
+    w.setFixedSize(w.width(),w.height());
     w.show();
 //    QTextCodec *codec = QTextCodec::codecForName("GBK");
 //    w.setWindowTitle(codec->toUnicode("四则运算算式生成器"));
