@@ -226,12 +226,11 @@ void MainWindow::string_replace( std::string &strBig, const std::string &strsrc,
 void MainWindow::generate()
 {
     tmpCol = 0;
-    ui->textEdit->clear();
     int totCnt=0;
+    init1();
     for(int i=0;i<arithNum;i++)
     {
         do{
-            init1();
             init2();
             ans = rand()%(maxNum-1)+1;//随机一个答案
             char operator1;
@@ -249,11 +248,6 @@ void MainWindow::generate()
         string_replace(InorderExpression,"*","×");
         string_replace(InorderExpression,"/","÷");
         InorderExpression = to_string(++totCnt) + ". "+InorderExpression;
-//        std_string_format(formatExpression,"%d",totL,InorderExpression);
-//        formatExpression=format_string("%s",InorderExpression);
-//        stringstream ss;
-//        ss<<InorderExpression;
-//        formatExpression = ss.str(totL);
         if( showAns)
             InorderExpression = InorderExpression + " = " + to_string(ans);
         InorderExpression.resize(totL,' ');
@@ -264,21 +258,12 @@ void MainWindow::generate()
             tmpCol = 0;
             nxt = nxt + "\n";
         }
-//        nxt.replace("*","×");
-//        nxt.replace("/","÷");
-        ui->textEdit->insertPlainText(nxt);
-//        std::cout<<InorderExpression<<" = "<<ans<<std::endl;
-        //getchar();
-//        TNode *tree;
-//        ExpTree3(tree,preExpression);
-//        inOrder(tree);
+        res += nxt;
     }
 }
 
 void MainWindow::on_ButtonGenerator_clicked()
 {
-    //开始计时
-    time_t begTimer = time(0);
     arithNum = ui->spinBox_arithNum->value();
     opNum = ui->spinBox_opNum->value();
     printCol = ui->spinBox_printCol->value();
@@ -294,13 +279,48 @@ void MainWindow::on_ButtonGenerator_clicked()
 //    ui->textEdit->setLineWrapColumnOrWidth(printCol);
 //    std::cout<<arithNum<<"  "<<opNum<<" "<<printCol<<" "<<minNum<<" "<<maxNum
 //            <<" "<<haveAdd<<" "<<haveSub<<" "<<haveMul<<" "<<haveDiv<<" "<<showAns<<std::endl;
+    ui->textEdit->clear();
+    ui->textEdit->insertPlainText("Please wait a moment. Generating...\n");
+
+    //开始计时
+    time_t begTimer = time(0);
+    clock_t start = clock();
     generate();
     //结束计时
-    time_t endTimer = time(0);
-    int timeUsed = int(endTimer - begTimer);
-    std::string ss = "total time used: " + to_string(timeUsed) + "s";
-    QString nxt = QString::fromStdString(ss);
+    time_t endTimer1 = time(0);
+    clock_t end1 = clock();
+    //显示表达式
+    ui->textEdit->clear();
+    ui->textEdit->insertPlainText(res);
+    //结束计时
+    time_t endTimer2 = time(0);
+    clock_t end2 = clock();
+
+    //显示性能数据
+    QString nxt = QString::fromStdString("\nDone! You have generate "+to_string(arithNum)+" record.\n");
     ui->textEdit->insertPlainText(nxt);
+    res += nxt;
+    //生成的用时
+    double timeTime1 = difftime(endTimer1, begTimer);
+    double timeClock1 = (double) (end1-start) / CLOCKS_PER_SEC * 1000.0;
+    std::string s1 = "Gennerator time used: \nfunction: clock(): " + to_string(timeClock1) +" ms\nfunction: time(): " + to_string(timeTime1)+" s\n";
+    nxt = QString::fromStdString(s1);
+    ui->textEdit->insertPlainText(nxt);
+    res += nxt;
+    //显示的用时
+    double timeTime2 = difftime(endTimer2, endTimer1);
+    double timeClock2 = (double) (end2-end1) / CLOCKS_PER_SEC * 1000.0;
+    std::string s2 = "Show time used: \nfunction: clock(): " + to_string(timeClock2) +" ms\nfunction: time(): " + to_string(timeTime2)+" s\n";
+    nxt = QString::fromStdString(s2);
+    ui->textEdit->insertPlainText(nxt);
+    res += nxt;
+    //总用时
+    double timeTime3 = difftime(endTimer2, begTimer);
+    double timeClock3 = (double) (end2-start) / CLOCKS_PER_SEC * 1000.0;
+    std::string s3 = "Show time used: \nfunction: clock(): " + to_string(timeClock3) +" ms\nfunction: time(): " + to_string(timeTime3)+" s\n";
+    nxt = QString::fromStdString(s3);
+    ui->textEdit->insertPlainText(nxt);
+    res += nxt;
 }
 
 void MainWindow::on_pushButton_copy_clicked()
@@ -324,6 +344,6 @@ void MainWindow::on_pushButton_saveAs_clicked()
             return;
         }
         QTextStream textStream(&file);
-        textStream<<ui->textEdit->toPlainText();
+        textStream<<res;
         file.close();
 }

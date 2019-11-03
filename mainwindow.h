@@ -48,6 +48,7 @@ private:
     int ans;
     bool isLeaf;
     int tmpCol;
+    QString res;
     struct Operator
     {
         int op;
