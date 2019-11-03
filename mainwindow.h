@@ -49,6 +49,7 @@ private:
     bool isLeaf;
     int tmpCol;
     QString res;
+    clock_t totStart, totEnd;
     struct Operator
     {
         int op;

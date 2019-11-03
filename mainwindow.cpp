@@ -225,6 +225,7 @@ void MainWindow::string_replace( std::string &strBig, const std::string &strsrc,
 }
 void MainWindow::generate()
 {
+    res = "";
     tmpCol = 0;
     int totCnt=0;
     init1();
@@ -249,10 +250,10 @@ void MainWindow::generate()
         string_replace(InorderExpression,"/","÷");
         InorderExpression = to_string(++totCnt) + ". "+InorderExpression;
         if( showAns)
-            InorderExpression = InorderExpression + " = " + to_string(ans);
+            InorderExpression += " = " + to_string(ans);
         InorderExpression.resize(totL,' ');
         QString nxt =QString::fromStdString(InorderExpression);
-        nxt = nxt + "\t";
+        nxt +="\t";
         tmpCol++;
         if(tmpCol>=printCol){
             tmpCol = 0;
@@ -264,6 +265,8 @@ void MainWindow::generate()
 
 void MainWindow::on_ButtonGenerator_clicked()
 {
+    //总计时
+    totStart = clock();
     arithNum = ui->spinBox_arithNum->value();
     opNum = ui->spinBox_opNum->value();
     printCol = ui->spinBox_printCol->value();
@@ -274,13 +277,13 @@ void MainWindow::on_ButtonGenerator_clicked()
     haveMul = ui->checkBox_haveMul->isChecked();
     haveDiv = ui->checkBox_haveDiv->isChecked();
     showAns = ui->checkBox_showAns->isChecked();
-    ui->textEdit->setReadOnly(true);
-    ui->textEdit->setLineWrapMode(QTextEdit::NoWrap);
-//    ui->textEdit->setLineWrapColumnOrWidth(printCol);
+    ui->plainTextEdit->setReadOnly(true);
+    ui->plainTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+//    ui->plainTextEdit->setLineWrapColumnOrWidth(printCol);
 //    std::cout<<arithNum<<"  "<<opNum<<" "<<printCol<<" "<<minNum<<" "<<maxNum
 //            <<" "<<haveAdd<<" "<<haveSub<<" "<<haveMul<<" "<<haveDiv<<" "<<showAns<<std::endl;
-    ui->textEdit->clear();
-    ui->textEdit->insertPlainText("Please wait a moment. Generating...\n");
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText("Please wait a moment. Generating...\n");
 
     //开始计时
     time_t begTimer = time(0);
@@ -290,47 +293,43 @@ void MainWindow::on_ButtonGenerator_clicked()
     time_t endTimer1 = time(0);
     clock_t end1 = clock();
     //显示表达式
-    ui->textEdit->clear();
-    ui->textEdit->insertPlainText(res);
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(res);
     //结束计时
     time_t endTimer2 = time(0);
     clock_t end2 = clock();
 
     //显示性能数据
     QString nxt = QString::fromStdString("\nDone! You have generate "+to_string(arithNum)+" record.\n");
-    ui->textEdit->insertPlainText(nxt);
+    ui->plainTextEdit->appendPlainText(nxt);
     res += nxt;
     //生成的用时
     double timeTime1 = difftime(endTimer1, begTimer);
     double timeClock1 = (double) (end1-start) / CLOCKS_PER_SEC * 1000.0;
     std::string s1 = "Gennerator time used: \nfunction: clock(): " + to_string(timeClock1) +" ms\nfunction: time(): " + to_string(timeTime1)+" s\n";
     nxt = QString::fromStdString(s1);
-    ui->textEdit->insertPlainText(nxt);
+    ui->plainTextEdit->appendPlainText(nxt);
     res += nxt;
     //显示的用时
     double timeTime2 = difftime(endTimer2, endTimer1);
     double timeClock2 = (double) (end2-end1) / CLOCKS_PER_SEC * 1000.0;
     std::string s2 = "Show time used: \nfunction: clock(): " + to_string(timeClock2) +" ms\nfunction: time(): " + to_string(timeTime2)+" s\n";
     nxt = QString::fromStdString(s2);
-    ui->textEdit->insertPlainText(nxt);
-    res += nxt;
-    //总用时
-    double timeTime3 = difftime(endTimer2, begTimer);
-    double timeClock3 = (double) (end2-start) / CLOCKS_PER_SEC * 1000.0;
-    std::string s3 = "Show time used: \nfunction: clock(): " + to_string(timeClock3) +" ms\nfunction: time(): " + to_string(timeTime3)+" s\n";
-    nxt = QString::fromStdString(s3);
-    ui->textEdit->insertPlainText(nxt);
+    ui->plainTextEdit->appendPlainText(nxt);
     res += nxt;
 }
 
 void MainWindow::on_pushButton_copy_clicked()
 {
-    ui->textEdit->selectAll();
-    ui->textEdit->copy();
+    ui->plainTextEdit->selectAll();
+    ui->plainTextEdit->copy();
 }
 
 void MainWindow::on_pushButton_saveAs_clicked()
 {
+    //开始计时
+    time_t begTimer = time(0);
+    clock_t start = clock();
     QString filePath = QFileDialog::getSaveFileName(this,tr("另存"),tr(""),tr("文本文件(*.txt)"));
     if(filePath == "")
             return;
@@ -345,5 +344,21 @@ void MainWindow::on_pushButton_saveAs_clicked()
         }
         QTextStream textStream(&file);
         textStream<<res;
+
+        //结束计时
+        time_t endTimer1 = time(0);
+        clock_t end1 = clock();
+        double timeTime1 = difftime(endTimer1, begTimer);
+        double timeClock1 = (double) (end1-start) / CLOCKS_PER_SEC * 1000.0;
+        std::string s1 = "save time used: \nfunction: clock(): " + to_string(timeClock1) +" ms\nfunction: time(): " + to_string(timeTime1)+" s\n";
+        QString nxt = QString::fromStdString(s1);
+        ui->plainTextEdit->appendPlainText(nxt);
+        res += nxt;
+        textStream<<nxt;
+        totEnd = clock();
+        double totTimeClock = (double) (totEnd-totStart) / CLOCKS_PER_SEC * 1000.0;
+        nxt = QString::fromStdString("total time used: \nfunction: clock(): " + to_string(totTimeClock)+"ms\n");
+        ui->plainTextEdit->appendPlainText(nxt);
+        textStream<<nxt;
         file.close();
 }
